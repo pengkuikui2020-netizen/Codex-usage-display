@@ -1,0 +1,97 @@
+<Window x:Class="CodexUsageWidget.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="276" Height="164"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Window.Resources>
+        <Style x:Key="IconButton" TargetType="Button">
+            <Setter Property="Width" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Margin" Value="2,0,0,0"/>
+            <Setter Property="Foreground" Value="#B6BDC9"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#26303C"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.72"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="17" Background="#F21A1D24" BorderBrush="#503A4250" BorderThickness="1" Padding="14,11,12,10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.38" Color="Black"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="15"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="7" Height="7" Fill="#66E3A4" Margin="0,0,7,0"/>
+                    <TextBlock Text="CODEX USAGE" Foreground="#F2F5F8" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="LoginButton" Style="{StaticResource IconButton}" Content="●" FontSize="10" ToolTip="重新登录" Click="Login_Click"/>
+                    <Button x:Name="RefreshButton" Style="{StaticResource IconButton}" Content="↻" ToolTip="刷新" Click="Refresh_Click"/>
+                    <Button Style="{StaticResource IconButton}" Content="×" ToolTip="关闭" Click="Close_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0,2,0,0">
+                <Grid.RowDefinitions><RowDefinition Height="23"/><RowDefinition Height="11"/><RowDefinition Height="16"/></Grid.RowDefinitions>
+                <TextBlock Text="5 HOURS" Foreground="#929AA7" FontSize="10.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock x:Name="FiveValue" Text="--% 剩余" HorizontalAlignment="Right" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"/>
+                <Grid Grid.Row="1" Height="5" VerticalAlignment="Center">
+                    <Border Background="#29303A" CornerRadius="3"/>
+                    <Border x:Name="FiveBar" Background="#66E3A4" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
+                </Grid>
+                <TextBlock x:Name="FiveReset" Grid.Row="2" Text="" Foreground="#737C8A" FontSize="9.5" VerticalAlignment="Bottom"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0,2,0,0">
+                <Grid.RowDefinitions><RowDefinition Height="23"/><RowDefinition Height="11"/><RowDefinition Height="16"/></Grid.RowDefinitions>
+                <TextBlock Text="WEEK" Foreground="#929AA7" FontSize="10.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock x:Name="WeekValue" Text="--% 剩余" HorizontalAlignment="Right" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"/>
+                <Grid Grid.Row="1" Height="5" VerticalAlignment="Center">
+                    <Border Background="#29303A" CornerRadius="3"/>
+                    <Border x:Name="WeekBar" Background="#72A7FF" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
+                </Grid>
+                <TextBlock x:Name="WeekReset" Grid.Row="2" Text="" Foreground="#737C8A" FontSize="9.5" VerticalAlignment="Bottom"/>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <TextBlock x:Name="StatusText" Text="准备读取…" Foreground="#68717F" FontSize="9.5" VerticalAlignment="Bottom"/>
+                <TextBlock x:Name="UpdatedText" Text="" HorizontalAlignment="Right" Foreground="#68717F" FontSize="9.5" VerticalAlignment="Bottom"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

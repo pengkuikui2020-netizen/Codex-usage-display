@@ -1,0 +1,25 @@
+<Window x:Class="CodexUsageWidget.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="登录 ChatGPT — Codex Usage Widget"
+        Width="1020" Height="760"
+        WindowStartupLocation="CenterOwner"
+        Background="#111318">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="58"/>
+        </Grid.RowDefinitions>
+        <wv2:WebView2 x:Name="LoginBrowser" Grid.Row="0" />
+        <Border Grid.Row="1" Background="#171A21" BorderBrush="#2B303A" BorderThickness="0,1,0,0">
+            <DockPanel Margin="16,9">
+                <TextBlock x:Name="HintText" Foreground="#C7CCD6" VerticalAlignment="Center"
+                           Text="请在上方完成 ChatGPT 登录；完成后点击右侧按钮。"/>
+                <Button DockPanel.Dock="Right" Width="112" Height="36" Click="Done_Click"
+                        Content="登录完成" Foreground="White" Background="#2B6EF2" BorderThickness="0"
+                        Cursor="Hand"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
