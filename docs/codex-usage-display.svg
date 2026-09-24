@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-label="Codex Usage Display preview">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="680" fill="transparent"/>
+  <rect x="18" y="18" width="1164" height="644" rx="52" fill="#1d2129" stroke="#46505f" stroke-width="3" filter="url(#shadow)"/>
+
+  <circle cx="76" cy="93" r="11" fill="#66e3a4"/>
+  <text x="108" y="112" fill="#f5f7fa" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="48" font-weight="700">CODEX USAGE</text>
+  <text x="930" y="108" fill="#b8c0cc" font-family="Segoe UI Symbol,Segoe UI,sans-serif" font-size="36">•</text>
+  <text x="1017" y="108" fill="#b8c0cc" font-family="Segoe UI Symbol,Segoe UI,sans-serif" font-size="36">↻</text>
+  <text x="1102" y="108" fill="#d7dce4" font-family="Segoe UI Symbol,Segoe UI,sans-serif" font-size="38">×</text>
+
+  <text x="74" y="220" fill="#949dab" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="34" font-weight="700">5 HOURS</text>
+  <text x="1118" y="218" text-anchor="end" fill="#ffffff" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="42" font-weight="700">100% 剩余</text>
+  <rect x="74" y="258" width="1044" height="18" rx="9" fill="#29303a"/>
+  <rect x="74" y="258" width="1044" height="18" rx="9" fill="#66e3a4"/>
+  <text x="74" y="326" fill="#747e8c" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="27">Resets 重置时间：2026年9月26日 19:51</text>
+
+  <text x="74" y="425" fill="#949dab" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="34" font-weight="700">WEEK</text>
+  <text x="1118" y="423" text-anchor="end" fill="#ffffff" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="42" font-weight="700">0% 剩余</text>
+  <rect x="74" y="463" width="1044" height="18" rx="9" fill="#29303a"/>
+  <text x="74" y="531" fill="#747e8c" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="27">Resets 重置时间：2026年9月26日 19:51</text>
+
+  <text x="1118" y="604" text-anchor="end" fill="#747e8c" font-family="Segoe UI,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="27">15:46 更新</text>
+</svg>
