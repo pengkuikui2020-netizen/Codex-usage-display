@@ -1,0 +1,76 @@
+name: Build and publish v1.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/release-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore ".\\src\\CodexUsageWidget\\CodexUsageWidget.csproj"
+
+      - name: Publish self-contained Windows build
+        run: >
+          dotnet publish ".\\src\\CodexUsageWidget\\CodexUsageWidget.csproj"
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=false
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o ".\\dist"
+
+      - name: Create ZIP package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ".\\dist\\CodexUsageWidget.exe" -DestinationPath ".\\CodexUsageDisplay-v1.0-win-x64.zip" -Force
+
+      - name: Create v1.0 release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "v1.0" --repo "${{ github.repository }}" 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release v1.0 already exists; leaving it unchanged."
+            exit 0
+          }
+
+          $notes = @"
+          ## Codex Usage Display v1.0
+
+          **English**
+          - Windows floating always-on-top widget for Codex 5-hour and weekly usage limits.
+          - Ready-to-run self-contained Windows x64 build.
+          - Local WebView2 sign-in; no API key is required.
+          - No third-party backend or telemetry.
+
+          **中文**
+          - Windows 右上角悬浮置顶小组件，显示 Codex 5 小时和每周使用额度。
+          - 提供可直接运行的 Windows x64 自包含版本。
+          - 使用本机 WebView2 登录，不需要 API Key。
+          - 不使用第三方后端，也不包含遥测。
+
+          > Unofficial community utility / 非官方社区工具。
+          "@
+          $notes | Out-File -FilePath ".\\release-notes.md" -Encoding utf8
+
+          gh release create "v1.0" ".\\dist\\CodexUsageWidget.exe" ".\\CodexUsageDisplay-v1.0-win-x64.zip" --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "Codex Usage Display v1.0" --notes-file ".\\release-notes.md"
