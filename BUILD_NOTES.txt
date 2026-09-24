@@ -1,0 +1,8 @@
+V1.1 build-script fix
+
+
+
+BUILD.cmd now calls dotnet directly and always pauses on errors.
+
+PowerShell scripts are saved as UTF-8 with BOM and use ASCII messages for compatibility with Windows PowerShell 5.1.
+

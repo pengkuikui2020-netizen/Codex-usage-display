@@ -1,0 +1,34 @@
+# .NET build output
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.cache
+*.log
+
+# Local settings / runtime state
+settings.json
+**/settings.json
+data/
+WebView2/
+webview_profile/
+**/WebView2/
+**/webview_profile/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Secrets / environment files
+.env
+.env.*
+secrets.json
+appsettings.Local.json
+appsettings.*.Local.json
