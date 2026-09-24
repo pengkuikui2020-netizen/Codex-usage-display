@@ -6,7 +6,7 @@ A small Windows always-on-top widget that displays the remaining ChatGPT Codex u
 > Unofficial community utility. Not affiliated with or endorsed by OpenAI.  
 > 非官方社区工具，与 OpenAI 无隶属关系，也不代表 OpenAI 官方认可。
 
-![Codex Usage Display](docs/codex-usage-display.png)
+![Codex Usage Display](docs/codex-usage-display.svg)
 
 ## Download / 下载
 
