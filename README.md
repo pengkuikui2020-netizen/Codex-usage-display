@@ -8,6 +8,11 @@ A small Windows always-on-top widget that displays the remaining ChatGPT Codex u
 
 ![Codex Usage Display](docs/codex-usage-display.png)
 
+## Download / 下载
+
+For most users, download the ready-to-run Windows version from **Releases**. The official release is self-contained, so you do not need to install the .NET SDK.  
+普通用户建议直接从 **Releases** 下载已经编译好的 Windows 版本。正式发布版为自包含构建，不需要另外安装 .NET SDK。
+
 ## Features / 功能
 
 - Shows the **5-hour usage limit** and **weekly usage limit**  
@@ -132,5 +137,5 @@ Do not commit or attach any WebView2 profile, cookies, browser storage, session 
 
 ## License / 许可证
 
-No license has been selected yet. Add the license you want before encouraging redistribution or modification.  
-目前尚未选择开源许可证。如果希望其他人合法修改、再发布或二次开发，建议后续添加合适的开源许可证。
+Released under the [MIT License](LICENSE).  
+本项目采用 [MIT License](LICENSE) 开源许可证。
