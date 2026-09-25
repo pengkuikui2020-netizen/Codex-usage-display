@@ -1,4 +1,4 @@
-name: Build and publish v1.0
+name: Build and publish v1.1
 
 on:
   push:
@@ -41,29 +41,37 @@ jobs:
       - name: Create ZIP package
         shell: pwsh
         run: |
-          Compress-Archive -Path ".\\dist\\CodexUsageWidget.exe" -DestinationPath ".\\CodexUsageDisplay-v1.0-win-x64.zip" -Force
+          Compress-Archive -Path ".\\dist\\CodexUsageWidget.exe" -DestinationPath ".\\CodexUsageDisplay-v1.1-win-x64.zip" -Force
 
-      - name: Create v1.0 release
+      - name: Create v1.1 release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view "v1.0" --repo "${{ github.repository }}" 2>$null
+          gh release view "v1.1" --repo "${{ github.repository }}" 2>$null
           if ($LASTEXITCODE -eq 0) {
-            Write-Host "Release v1.0 already exists; leaving it unchanged."
+            Write-Host "Release v1.1 already exists; leaving it unchanged."
             exit 0
           }
 
           $notes = @"
-          ## Codex Usage Display v1.0
+          ## Codex Usage Display v1.1
 
           **English**
+          - Adds compact mode: collapse the widget to a single top row.
+          - Compact summary shows 5H and weekly remaining percentages.
+          - Login, refresh, and close buttons hide automatically while collapsed.
+          - The collapsed/expanded state is remembered across launches.
           - Windows floating always-on-top widget for Codex 5-hour and weekly usage limits.
           - Ready-to-run self-contained Windows x64 build.
           - Local WebView2 sign-in; no API key is required.
           - No third-party backend or telemetry.
 
           **中文**
+          - 新增迷你折叠模式：可将窗口收起为顶部单行。
+          - 折叠后显示 5H 与周额度的超短摘要。
+          - 折叠时自动隐藏登录、刷新和关闭按钮。
+          - 会记住上次的收起/展开状态。
           - Windows 右上角悬浮置顶小组件，显示 Codex 5 小时和每周使用额度。
           - 提供可直接运行的 Windows x64 自包含版本。
           - 使用本机 WebView2 登录，不需要 API Key。
@@ -73,4 +81,4 @@ jobs:
           "@
           $notes | Out-File -FilePath ".\\release-notes.md" -Encoding utf8
 
-          gh release create "v1.0" ".\\dist\\CodexUsageWidget.exe" ".\\CodexUsageDisplay-v1.0-win-x64.zip" --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "Codex Usage Display v1.0" --notes-file ".\\release-notes.md"
+          gh release create "v1.1" ".\\dist\\CodexUsageWidget.exe" ".\\CodexUsageDisplay-v1.1-win-x64.zip" --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "Codex Usage Display v1.1" --notes-file ".\\release-notes.md"
