@@ -21,6 +21,8 @@ For most users, download the ready-to-run Windows version from **Releases**. The
   显示剩余百分比和额度重置时间
 - Small borderless always-on-top window  
   小巧、无边框、始终置顶的悬浮窗口
+- **Compact mode:** collapse to a single top row showing `5H xx% · W xx%`  
+  **迷你折叠模式：** 可收起为单行，仅显示 `5H xx% · W xx%` 的额度摘要
 - Draggable and remembers its last position  
   支持拖动，并记住上次窗口位置
 - Manual refresh and automatic refresh (default: every 2 minutes)  
@@ -35,6 +37,19 @@ For most users, download the ready-to-run Windows version from **Releases**. The
   **不会**保存你的 ChatGPT 密码
 - No third-party server; page parsing happens locally  
   不使用第三方服务器，页面解析全部在本机完成
+
+## What's new / 更新说明
+
+### v1.1 Compact mode / 迷你折叠模式
+
+- Click the new arrow button in the title bar to collapse or expand the widget.  
+  点击标题栏中的新箭头按钮即可收起或展开窗口。
+- When collapsed, only the green status dot, `CODEX USAGE`, a compact `5H xx% · W xx%` quota summary, and the expand button remain visible.  
+  收起后仅保留绿色状态点、`CODEX USAGE`、`5H xx% · W xx%` 的额度摘要以及展开按钮。
+- Login, refresh, and close buttons are hidden in compact mode to save desktop space.  
+  折叠模式下会自动隐藏登录、刷新和关闭按钮，进一步节省桌面空间。
+- The collapsed/expanded state is remembered across launches.  
+  程序会记住上次的收起/展开状态。
 
 ## Privacy and security / 隐私与安全
 
