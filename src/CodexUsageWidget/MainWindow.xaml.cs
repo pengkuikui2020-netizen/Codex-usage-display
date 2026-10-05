@@ -92,7 +92,7 @@ public partial class MainWindow : Window
             SetUsage(data.WeeklyRemainingPercent, WeekValue, WeekBar);
             FiveReset.Text = ShortReset(data.FiveHourResetText);
             WeekReset.Text = ShortReset(data.WeeklyResetText);
-            UpdatedText.Text = data.UpdatedAt.ToString("HH:mm 更新");
+            UpdatedText.Text = data.UpdatedAt.ToString("HH:mm:ss 更新");
             StatusText.Text = "";
             CompactSummary.Text = FormatCompactSummary(data.FiveHourRemainingPercent, data.WeeklyRemainingPercent);
             return;
@@ -102,6 +102,8 @@ public partial class MainWindow : Window
         WeekValue.Text = "--% 剩余";
         FiveBar.Width = 0;
         WeekBar.Width = 0;
+        FiveReset.Text = "";
+        WeekReset.Text = "";
         UpdatedText.Text = "";
         StatusText.Text = data.LoginRequired ? "需要登录 · 点击 ●" : (data.ErrorMessage ?? "读取失败");
         CompactSummary.Text = data.LoginRequired ? "需登录" : "--";
@@ -124,7 +126,7 @@ public partial class MainWindow : Window
     {
         if (string.IsNullOrWhiteSpace(text)) return string.Empty;
         var t = text.Trim();
-        if (t.StartsWith("Resets", StringComparison.OrdinalIgnoreCase)) return t;
+        if (t.Contains("reset", StringComparison.OrdinalIgnoreCase) || t.Contains("重置") || t.Contains("恢复")) return t;
         return "Resets " + t;
     }
 

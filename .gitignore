@@ -1,4 +1,5 @@
 # .NET build output
+.tmp/
 bin/
 obj/
 publish/

@@ -9,7 +9,7 @@ namespace CodexUsageWidget.Services;
 
 public sealed class CodexUsageService : IAsyncDisposable
 {
-    public const string AnalyticsUrl = "https://chatgpt.com/codex/cloud/settings/analytics";
+    public const string UsageUrl = "https://chatgpt.com/settings/usage?tab=overview";
 
     private CoreWebView2Environment? _environment;
     private HiddenBrowserWindow? _host;
@@ -42,14 +42,25 @@ public sealed class CodexUsageService : IAsyncDisposable
             if (_host?.Browser.CoreWebView2 is null)
                 return new CodexUsageData { ErrorMessage = "WebView2 初始化失败。" };
 
-            var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void Handler(object? _, CoreWebView2NavigationCompletedEventArgs __) => completion.TrySetResult(true);
+            var completion = new TaskCompletionSource<CoreWebView2NavigationCompletedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+            void Handler(object? _, CoreWebView2NavigationCompletedEventArgs args) => completion.TrySetResult(args);
 
             _host.Browser.NavigationCompleted += Handler;
             try
             {
-                _host.Browser.CoreWebView2.Navigate(AnalyticsUrl);
-                await Task.WhenAny(completion.Task, Task.Delay(TimeSpan.FromSeconds(25)));
+                if (_host.Browser.Source?.AbsoluteUri == UsageUrl)
+                    _host.Browser.CoreWebView2.Reload();
+                else
+                    _host.Browser.CoreWebView2.Navigate(UsageUrl);
+
+                if (await Task.WhenAny(completion.Task, Task.Delay(TimeSpan.FromSeconds(25))) != completion.Task)
+                {
+                    _host.Browser.CoreWebView2.Stop();
+                    return new CodexUsageData { ErrorMessage = "页面加载超时，请刷新重试。" };
+                }
+                var navigation = await completion.Task;
+                if (!navigation.IsSuccess)
+                    return new CodexUsageData { ErrorMessage = $"页面加载失败：{navigation.WebErrorStatus}" };
             }
             finally
             {

@@ -20,7 +20,7 @@ public partial class LoginWindow : Window
         {
             await LoginBrowser.EnsureCoreWebView2Async(_environment);
             LoginBrowser.CoreWebView2.Settings.AreDevToolsEnabled = false;
-            LoginBrowser.CoreWebView2.Navigate(Services.CodexUsageService.AnalyticsUrl);
+            LoginBrowser.CoreWebView2.Navigate(Services.CodexUsageService.UsageUrl);
         }
         catch (Exception ex)
         {

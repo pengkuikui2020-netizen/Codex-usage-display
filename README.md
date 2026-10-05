@@ -1,7 +1,7 @@
 # Codex Usage Display
 
-A small Windows always-on-top widget that displays the remaining ChatGPT Codex usage limits from the Codex Analytics page.  
-一个适用于 Windows 的小巧置顶悬浮窗，用于显示 ChatGPT Codex Analytics 页面中的 5 小时和每周剩余使用额度。
+A small Windows always-on-top widget that displays the remaining 5-hour and weekly limits from the ChatGPT usage overview.<br>
+一个适用于 Windows 的小巧置顶悬浮窗，用于显示 ChatGPT 用量概览中的 5 小时和每周剩余使用额度。
 
 > Unofficial community utility. Not affiliated with or endorsed by OpenAI.  
 > 非官方社区工具，与 OpenAI 无隶属关系，也不代表 OpenAI 官方认可。
@@ -113,10 +113,10 @@ The executable will be created at:
 The app reads the visible text from:  
 程序读取以下页面中的可见文字：
 
-`https://chatgpt.com/codex/cloud/settings/analytics`
+`https://chatgpt.com/settings/usage?tab=overview`
 
-Because ChatGPT is a client-rendered web application, the parser waits for the usage cards to load before extracting the percentages.  
-由于 ChatGPT 页面采用前端动态加载，程序会等待额度卡片加载完成后再提取百分比。
+Because ChatGPT is a client-rendered web application, the parser waits for both current usage cards to load. Every refresh reloads the page; navigation failures are reported instead of reading old content.<br>
+由于 ChatGPT 页面采用前端动态加载，程序会等待两个当前额度卡片加载完成。每次刷新会重新加载页面；页面加载失败时显示错误，不读取旧内容。
 
 ## How it works / 工作原理
 
@@ -129,10 +129,22 @@ The app intentionally avoids depending on fragile CSS class names. It reads visi
 - Chinese equivalents such as `剩余 87%`  
   以及中文页面中的 `剩余 87%` 等对应文字
 
+Each card is parsed independently. Only percentages explicitly marked as remaining or used are accepted; used percentages are converted to remaining, and decimal percentages are rounded to the nearest integer. Bare percentages and the analytics history tab are rejected.<br>
+两个卡片分别解析，只接受明确标注“剩余”或“已用”的百分比。已用比例换算为剩余比例，小数四舍五入到整数；不接受没有语义标记的百分比和分析历史页面。展开与折叠模式均显示剩余额度，更新时间精确到秒。
+
 If OpenAI changes the wording or page structure, the parser may need to be updated in:  
 如果 OpenAI 将来修改了页面文案或结构，可能需要更新：
 
 `src/CodexUsageWidget/Services/CodexUsageParser.cs`
+
+## Development checks / 开发验证
+
+```powershell
+dotnet run --project ".\tests\CodexUsageWidget.Tests\CodexUsageWidget.Tests.csproj"
+```
+
+Project rules and current progress are maintained in `AGENTS.md` and `ROADMAP.md`.<br>
+项目规范与当前进度分别维护在 `AGENTS.md` 和 `ROADMAP.md`。
 
 ## Current scope / 当前版本范围
 

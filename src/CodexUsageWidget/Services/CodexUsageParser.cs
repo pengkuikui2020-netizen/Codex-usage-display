@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Globalization;
 using CodexUsageWidget.Models;
 
 namespace CodexUsageWidget.Services;
@@ -37,24 +38,20 @@ public static partial class CodexUsageParser
         var five = ExtractSection(lines, FiveHourKeys);
         var week = ExtractSection(lines, WeekKeys);
 
-        if (five.Percent is null && ContainsAny(text, FiveHourKeys))
-            five.Percent = ExtractNearestPercent(text, FiveHourKeys);
-        if (week.Percent is null && ContainsAny(text, WeekKeys))
-            week.Percent = ExtractNearestPercent(text, WeekKeys);
-
-        if (five.Percent is null && week.Percent is null)
+        if (url.Contains("tab=analytics", StringComparison.OrdinalIgnoreCase) ||
+            five.Percent is null || week.Percent is null)
         {
             return new CodexUsageData
             {
-                ErrorMessage = "页面已打开，但暂未识别到额度；请点 ↻ 再试或点 ● 重新登录。"
+                ErrorMessage = "未读到完整的当前额度；请刷新或重新登录。"
             };
         }
 
         return new CodexUsageData
         {
-            FiveHourRemainingPercent = Clamp(five.Percent),
+            FiveHourRemainingPercent = five.Percent,
             FiveHourResetText = five.Reset,
-            WeeklyRemainingPercent = Clamp(week.Percent),
+            WeeklyRemainingPercent = week.Percent,
             WeeklyResetText = week.Reset,
             UpdatedAt = DateTime.Now
         };
@@ -64,9 +61,9 @@ public static partial class CodexUsageParser
     {
         var text = Normalize(pageText);
         if (string.IsNullOrWhiteSpace(text)) return false;
-        if (ContainsAny(text, FiveHourKeys) && AnyPercentRegex().IsMatch(text)) return true;
-        if (ContainsAny(text, WeekKeys) && AnyPercentRegex().IsMatch(text)) return true;
-        return false;
+        var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return ExtractSection(lines, FiveHourKeys).Percent.HasValue &&
+               ExtractSection(lines, WeekKeys).Percent.HasValue;
     }
 
     public static bool LooksLikeLoginPage(string currentUrl, string pageText) =>
@@ -75,59 +72,61 @@ public static partial class CodexUsageParser
     private static (int? Percent, string? Reset) ExtractSection(string[] lines, string[] keys)
     {
         var indices = Enumerable.Range(0, lines.Length)
-            .Where(i => keys.Any(k => lines[i].Contains(k, StringComparison.OrdinalIgnoreCase)))
+            .Where(i => IsHeading(lines[i], keys))
             .ToArray();
 
         foreach (var idx in indices)
         {
             var start = idx;
-            var end = Math.Min(lines.Length - 1, idx + 10);
+            var end = idx;
+            while (end + 1 < lines.Length && end < idx + 5)
+            {
+                var next = lines[end + 1];
+                if (IsHeading(next, FiveHourKeys) || IsHeading(next, WeekKeys) ||
+                    SectionBoundaryRegex().IsMatch(next)) break;
+                end++;
+            }
             var window = lines[start..(end + 1)];
-            var joined = string.Join(" | ", window);
+            var joined = string.Join("\n", window);
 
             var percent = ParseRemainingPercent(joined);
             var reset = ParseReset(window);
-            if (percent.HasValue || reset is not null)
+            if (percent.HasValue)
                 return (percent, reset);
         }
 
         return (null, null);
     }
 
-    private static int? ExtractNearestPercent(string text, string[] keys)
-    {
-        var lower = text.ToLowerInvariant();
-        foreach (var key in keys)
-        {
-            var pos = lower.IndexOf(key.ToLowerInvariant(), StringComparison.Ordinal);
-            if (pos < 0) continue;
-            var len = Math.Min(800, lower.Length - pos);
-            var slice = text.Substring(pos, len);
-            var p = ParseRemainingPercent(slice);
-            if (p.HasValue) return p;
-        }
-        return null;
-    }
+    private static bool IsHeading(string line, string[] keys) => keys.Any(key =>
+        line.Equals(key, StringComparison.OrdinalIgnoreCase) ||
+        (line.StartsWith(key, StringComparison.OrdinalIgnoreCase) &&
+         line.Length > key.Length &&
+         (char.IsWhiteSpace(line[key.Length]) || line[key.Length] is ':' or '：') &&
+         (RemainingPercentRegex().IsMatch(line[key.Length..]) || UsedPercentRegex().IsMatch(line[key.Length..]))));
 
     private static int? ParseRemainingPercent(string text)
     {
         foreach (Match m in RemainingPercentRegex().Matches(text))
         {
             var raw = m.Groups["pct"].Success ? m.Groups["pct"].Value : m.Groups["pct2"].Value;
-            if (int.TryParse(raw, out var pct)) return pct;
+            return ToRemainingPercent(raw, used: false);
         }
 
         foreach (Match m in UsedPercentRegex().Matches(text))
         {
             var raw = m.Groups["pct"].Success ? m.Groups["pct"].Value : m.Groups["pct2"].Value;
-            if (int.TryParse(raw, out var pct)) return 100 - pct;
+            return ToRemainingPercent(raw, used: true);
         }
 
-        var any = AnyPercentRegex().Match(text);
-        if (any.Success && int.TryParse(any.Groups["pct"].Value, out var apct))
-            return apct;
-
         return null;
+    }
+
+    private static int? ToRemainingPercent(string raw, bool used)
+    {
+        if (!decimal.TryParse(raw, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var percent) ||
+            percent < 0 || percent > 100) return null;
+        return (int)decimal.Round(used ? 100 - percent : percent, 0, MidpointRounding.AwayFromZero);
     }
 
     private static string? ParseReset(IEnumerable<string> lines)
@@ -164,14 +163,12 @@ public static partial class CodexUsageParser
     private static string Normalize(string text) =>
         (text ?? string.Empty).Replace("\r\n", "\n").Replace('\r', '\n');
 
-    private static int? Clamp(int? value) => value.HasValue ? Math.Clamp(value.Value, 0, 100) : null;
-
-    [GeneratedRegex(@"(?:(?<pct>\d{1,3})\s*%\s*(?:remaining|left|available|剩余|可用))|(?:(?:remaining|left|available|剩余|可用)\s*[:：]?\s*(?<pct2>\d{1,3})\s*%)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(?:(?<![\d.,<>+\-])(?<pct>\d{1,3}(?:\.\d+)?)\s*%\s*(?:remaining|left|available|剩余|可用))|(?:(?:remaining|left|available|剩余|可用)\s*[:：]?\s*(?<pct2>\d{1,3}(?:\.\d+)?)\s*%)", RegexOptions.IgnoreCase)]
     private static partial Regex RemainingPercentRegex();
 
-    [GeneratedRegex(@"(?:(?<pct>\d{1,3})\s*%\s*(?:used|consumed|已使用|已用))|(?:(?:used|consumed|已使用|已用)\s*[:：]?\s*(?<pct2>\d{1,3})\s*%)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(?:(?<![\d.,<>+\-])(?<pct>\d{1,3}(?:\.\d+)?)\s*%\s*(?:used|consumed|已使用|已用))|(?:(?:used|consumed|已使用|已用)\s*[:：]?\s*(?<pct2>\d{1,3}(?:\.\d+)?)\s*%)", RegexOptions.IgnoreCase)]
     private static partial Regex UsedPercentRegex();
 
-    [GeneratedRegex(@"(?<pct>\d{1,3})\s*%", RegexOptions.IgnoreCase)]
-    private static partial Regex AnyPercentRegex();
+    [GeneratedRegex(@"^(?:credits?|daily usage|usage history|plan usage history|code review.*|额度|剩余额度.*|每日用量|用量历史记录|套餐用量历史|代码审查.*)$", RegexOptions.IgnoreCase)]
+    private static partial Regex SectionBoundaryRegex();
 }
